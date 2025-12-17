@@ -1,0 +1,1 @@
+# NextJs Learning Practice Code
