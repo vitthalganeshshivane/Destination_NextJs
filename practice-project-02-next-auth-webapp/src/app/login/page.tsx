@@ -38,7 +38,9 @@ function Login() {
               placeholder="Enter Email"
               className="w-full border-b border-white py-2 px-1 bg-gray-900 text-white outline-none placeholder-gray-400"
               value={email}
-              onChange={(e: React.ChangeEvent) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setEmail(e.target.value)
+              }
             />
           </div>
 
@@ -49,7 +51,9 @@ function Login() {
               placeholder="Enter Password"
               className="w-full border-b border-white py-2 px-1 mb-4 bg-gray-900 text-white outline-none placeholder-gray-400"
               value={password}
-              onChange={(e: React.ChangeEvent) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setPassword(e.target.value)
+              }
             />
           </div>
 

@@ -96,7 +96,9 @@ function Page() {
               placeholder="Enter Name"
               className="w-full border-b border-white py-2 px-1 bg-black text-white outline-none placeholder-gray-400"
               value={name}
-              onChange={(e: React.ChangeEvent) => setName(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setName(e.target.value)
+              }
             />
           </div>
           <button
