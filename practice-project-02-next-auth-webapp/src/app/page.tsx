@@ -1,11 +1,59 @@
-import React from "react";
+"use client";
 
-function page() {
+import { userDataContext } from "@/context/UserContext";
+import { signOut } from "next-auth/react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React, { useContext, useState } from "react";
+import { HiPencil } from "react-icons/hi2";
+
+function Page() {
+  const data = useContext(userDataContext);
+
+  const [Loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    setLoading(true);
+    try {
+      await signOut();
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div>
-      <h1>home page</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white px-4">
+      {data && (
+        <div className="w-full max-w-md border-2 border-white rounded-2xl p-8 shadow-lg text-center relative flex flex-col items-center">
+          <HiPencil
+            size={22}
+            color="white"
+            className="absolute right-[20px] top-[20px] cursor-pointer"
+            onClick={() => router.push("/edit")}
+          />
+          {data?.user?.image && (
+            <div className="relative w-[200px] h-[200px] rounded-full border-2 border-white overflow-hidden mb-4">
+              <Image src={data.user?.image} fill alt="userImage" />
+            </div>
+          )}
+          <h1 className="text-2xl font-semibold mb-4">
+            Welcome , {data.user?.name}
+          </h1>
+          <button
+            className="w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-300 transition-colors"
+            onClick={handleSignOut}
+          >
+            Sign Out
+          </button>
+        </div>
+      )}
+
+      {!data && <div className="text-white text-2xl">Loading......</div>}
     </div>
   );
 }
 
-export default page;
+export default Page;
