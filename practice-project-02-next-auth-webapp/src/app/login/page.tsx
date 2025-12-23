@@ -1,5 +1,6 @@
 "use client";
-import axios from "axios";
+
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import React, { useState } from "react";
@@ -11,11 +12,25 @@ function Login() {
 
   const router = useRouter();
 
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white px-4">
       <div className="w-full max-w-md border-2 border-white rounded-2xl p-8 shadow-8 bg-gray-900">
         <h1 className="text-2xl font-semibold text-center mb-6">Login</h1>
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSignIn}>
           <div>
             <label className="block mt-3 font-medium">Email</label>
             <input
@@ -59,9 +74,14 @@ function Login() {
           <hr className="flex-grow border-gray-500" />
         </div>
 
-        <button className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-400 rounded-lg bg-white text-black hover:bg-gray-300 transition-colors">
+        <button
+          className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-400 rounded-lg bg-white text-black hover:bg-gray-300 transition-colors"
+          onClick={async () => {
+            await signIn("google", { callbackUrl: "/" });
+          }}
+        >
           <FcGoogle />
-          <span>Sign Up With Google</span>
+          <span>Sign In With Google</span>
         </button>
       </div>
     </div>
