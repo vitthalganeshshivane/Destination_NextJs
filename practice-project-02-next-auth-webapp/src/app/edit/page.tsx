@@ -1,16 +1,20 @@
 "use client";
 
+import { userDataContext } from "@/context/UserContext";
+import axios from "axios";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { CgProfile } from "react-icons/cg";
 
-function page() {
+function Page() {
+  const data = useContext(userDataContext);
+
   const [name, setName] = useState("");
   const [frontendImg, setFrontendImg] = useState("");
   const [backendImg, setBackendImg] = useState<File | null>();
+  const [loading, setLoading] = useState(false);
 
-  const { data } = useSession();
   const imageInput = useRef<HTMLInputElement>(null);
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,6 +27,27 @@ function page() {
     setFrontendImg(URL.createObjectURL(file));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      if (backendImg) {
+        formData.append("file", backendImg);
+      }
+      const result = await axios.post("/api/edit", formData);
+      data?.setUser(result?.data);
+
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   //   useEffect(() => {
   //     if (data) {
   //       setName(data?.user.name as string);
@@ -33,7 +58,7 @@ function page() {
   useEffect(() => {
     if (data?.user?.name) {
       setName(data?.user?.name ?? "");
-      setFrontendImg(data.user.image ?? "");
+      setFrontendImg(data?.user?.image ?? "");
     }
   }, [data]);
 
@@ -43,7 +68,10 @@ function page() {
         <h1 className="text-2xl font-semibold text-center mb-2">
           Edit Profile
         </h1>
-        <form className="space-y-2 flex flex-col w-full items-center">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-2 flex flex-col w-full items-center"
+        >
           <div
             className="w-[200px] h-[200px] rounded-full border-2 flex justify-center items-center border-white transition-all hover:border-blue-500 text-white hover:text-blue-500 cursor-pointer overflow-hidden relative"
             onClick={() => imageInput.current?.click()}
@@ -71,8 +99,11 @@ function page() {
               onChange={(e: React.ChangeEvent) => setName(e.target.value)}
             />
           </div>
-          <button className="w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors">
-            Save
+          <button
+            className="w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors"
+            disabled={loading}
+          >
+            {loading ? "Saving...." : "Save"}
           </button>
         </form>
       </div>
@@ -80,4 +111,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;
