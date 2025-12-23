@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ClientProvider from "@/ClientProvider";
+import UserContext from "@/context/UserContext";
 
 export const metadata: Metadata = {
   title: "NextAuth WebApp",
@@ -13,7 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ClientProvider>
+          <UserContext>{children}</UserContext>
+        </ClientProvider>
+      </body>
     </html>
   );
 }
